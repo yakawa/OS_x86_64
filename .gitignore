@@ -1,0 +1,6 @@
+.dropbox.attr
+*~
+*.log
+bochs.rc
+os.map
+os.iso
