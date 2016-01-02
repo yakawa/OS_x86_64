@@ -2,9 +2,11 @@ include ./Makefile.inc
 
 boot_dir = boot
 kernel_dir = kernel
+klib_dir = klib
 
 OBJECTS = $(boot_dir)/loader.o \
-					$(kernel_dir)/kernel.o
+					$(kernel_dir)/kernel.o \
+					$(klib_dir)/io.o
 
 LDFLAGS = -T link.ld -Map os.map -z max-page-size=0x1000
 
@@ -16,6 +18,7 @@ kernel.elf: build $(OBJECTS)
 build:
 	cd $(boot_dir) && make
 	cd $(kernel_dir) && make
+	cd $(klib_dir) && make
 
 os.iso: kernel.elf
 	cp kernel.elf ../iso/boot/kernel.elf
@@ -28,5 +31,6 @@ clean:
 	rm -rf *.o kernel.elf ../os.iso os.map
 	cd $(boot_dir) && make clean
 	cd $(kernel_dir) && make clean
+	cd $(klib_dir) && make clean
 
 .PHONY: clean all

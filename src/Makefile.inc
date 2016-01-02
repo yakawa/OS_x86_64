@@ -3,8 +3,8 @@ LD = ld
 ASM = nasm
 
 CFLAGS = -m64
-CFLAGS += -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs
-CFLAGS += -Wall -Werror -c -masm=intel
+CFLAGS += -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -ffreestanding
+CFLAGS += -Wall -Werror -c -masm=intel -mcmodel=kernel
 
 AS = nasm
 ASFLAGS = -f elf64
