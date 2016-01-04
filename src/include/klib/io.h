@@ -19,10 +19,15 @@
 #define FB_LIGHT_BROWN   0x0E
 #define FB_WHITE         0x0F
 
+#define io_hlt() ({__asm__ __volatile__("hlt");})
+#define io_cli() ({__asm__ __volatile__("cli");})
+#define io_sti() ({__asm__ __volatile__("sti");})
+
 
 int kputchar(int c);
 int kputs(const char *s);
 int kprintf(const char *fmt, ...);
 
+void io_out8(unsigned short address, unsigned char val);
 
 #endif

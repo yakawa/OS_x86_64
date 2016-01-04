@@ -1,7 +1,7 @@
 include ../Makefile.inc
 CFLAGS += -I../include -I.
 
-OBJS = io.o
+OBJS = io.o io_asm.o
 
 all: $(OBJS)
 

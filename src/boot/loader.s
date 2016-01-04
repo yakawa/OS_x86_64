@@ -44,8 +44,6 @@ flush:
 				mov 	ax, 0x10
 				mov 	ds, ax
 				mov 	es, ax
-				mov 	fs, ax
-				mov 	gs, ax
 				mov 	ss, ax
 
 
@@ -83,14 +81,17 @@ flush:
 				or eax, 1 << 31
 				mov	cr0, eax
 
-				jmp	0x18:_64_enter
+				lgdt [GDT64.Pointer] ; Load the 64-bit global descriptor table.
 
+;;; 				jmp	0x18:_64_enter
+
+				jmp	0x08:_64_enter
 BITS 64
 _64_enter:
 				mov	rax, 0xFFFFFFFF80000000
 				add	rsp, rax
 
-				mov eax, 0x20
+				mov eax, 0x10
 				mov ds, ax
 				mov es, ax
 				mov ss, ax
@@ -155,6 +156,33 @@ _gdt:
 				db	0b10010010
 				db	0xAF
 				db	0x00
+
+
+GDT64:
+.null:  											; Global Descriptor Table (64-bit).
+				dw 0								 ; Limit (low).
+				dw 0								 ; Base (low).
+				db 0								 ; Base (middle)
+				db 0								 ; Access.
+				db 0								 ; Granularity.
+				db 0								 ; Base (high).
+.Code:
+				dw 0								 ; Limit (low).
+				dw 0								 ; Base (low).
+				db 0								 ; Base (middle)
+				db 10011010b				 ; Access (exec/read).
+				db 00100000b				 ; Granularity.
+				db 0								 ; Base (high).
+.data:
+				dw 0								 ; Limit (low).
+				dw 0								 ; Base (low).
+				db 0								 ; Base (middle)
+				db 10010010b				 ; Access (read/write).
+				db 00000000b				 ; Granularity.
+				db 0								 ; Base (high).
+.Pointer:						 ; The GDT-pointer.
+				dw $ - GDT64 - 1		 ; Limit.
+				dq GDT64						 ; Base.
 
 ;;; Page table
 align 4096

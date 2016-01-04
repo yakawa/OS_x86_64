@@ -6,7 +6,11 @@ klib_dir = klib
 
 OBJECTS = $(boot_dir)/loader.o \
 					$(kernel_dir)/kernel.o \
-					$(klib_dir)/io.o
+					$(kernel_dir)/irs.o \
+					$(kernel_dir)/irs_func.o \
+					$(kernel_dir)/timer.o \
+					$(klib_dir)/io.o \
+					$(klib_dir)/io_asm.o
 
 LDFLAGS = -T link.ld -Map os.map -z max-page-size=0x1000
 
