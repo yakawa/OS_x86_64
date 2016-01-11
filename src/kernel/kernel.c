@@ -112,9 +112,10 @@ void kmain(unsigned long magic, unsigned long addr)
 	kprintf("[INFO] set IDT\n");
 
 	initializePIC();
-	kprintf("[INFO] initialized PIC");
+	kprintf("[INFO] initialized PIC\n");
 
 	startTimer();
+	kprintf("[INFO] Start Timer\n");
 
 	while(1){
 		io_hlt();
