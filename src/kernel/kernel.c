@@ -47,25 +47,25 @@ void setIDT64(void)
 		set_idt(&idt[i], (void*)irs_ignore, 0x08, 1, 0, 0);
 	}
 
-	set_idt(&idt[0x00], (void *)irs_div_by_0, 0x08, 1, 0, 0); // 0除算 #DE  (Division by 0)
-	set_idt(&idt[0x01], (void *)irs_ignore, 0x08, 1, 0, 0); // Debug #DB
-	set_idt(&idt[0x02], (void *)irs_ignore, 0x08, 1, 0, 0); // Non maskable Interrupts
-	set_idt(&idt[0x03], (void *)irs_ignore, 0x08, 1, 0, 0); // break point #BP int 03h
-	set_idt(&idt[0x04], (void *)irs_ignore, 0x08, 1, 0, 0); // overflow #OF
-	set_idt(&idt[0x05], (void *)irs_ignore, 0x08, 1, 0, 0); // Bounds Check #BR
-	set_idt(&idt[0x06], (void *)irs_ignore, 0x08, 1, 0, 0); // 無効な命令 #UD (Undifined Operation Code instruction)
-	set_idt(&idt[0x07], (void *)irs_ignore, 0x08, 1, 0, 0); // コプロセッサーがない #NM (No coprosessor)
-	set_idt(&idt[0x08], (void *)irs_ignore, 0x08, 1, 0, 0); // Double Falt #DF
-	set_idt(&idt[0x09], (void *)irs_ignore, 0x08, 1, 0, 0); // Coprocessor Segment Overrun #MF
-	set_idt(&idt[0x0A], (void *)irs_ignore, 0x08, 1, 0, 0); // 無効なTSS #TS (Invalid TSS)
-	set_idt(&idt[0x0B], (void *)irs_ignore, 0x08, 1, 0, 0); // セグメントエラー #NP (Segment Not Present)
-	set_idt(&idt[0x0C], (void *)irs_ignore, 0x08, 1, 0, 0); // Stack Segment Fault #SS
-	set_idt(&idt[0x0D], (void *)irs_ignore, 0x08, 1, 0, 0); // 一般保護例外 #GP
-	set_idt(&idt[0x0E], (void *)irs_ignore, 0x08, 1, 0, 0); // ページフォールト #PF
-	set_idt(&idt[0x10], (void *)irs_ignore, 0x08, 1, 0, 0); // 浮動小数点エラー #MF
-	set_idt(&idt[0x11], (void *)irs_ignore, 0x08, 1, 0, 0); // アライメントエラー #AC
-	set_idt(&idt[0x12], (void *)irs_ignore, 0x08, 1, 0, 0); // マシンチェック #MC
-	set_idt(&idt[0x13], (void *)irs_ignore, 0x08, 1, 0, 0); // SIMDエラー #XF
+	set_idt(&idt[0x00], (void *)irs_DE, 0x08, 1, 0, 0); // 0除算 #DE  (Division by 0)
+	set_idt(&idt[0x01], (void *)irs_DB, 0x08, 1, 0, 0); // Debug #DB
+	set_idt(&idt[0x02], (void *)irs_NMI, 0x08, 1, 0, 0); // Non maskable Interrupts
+	set_idt(&idt[0x03], (void *)irs_BP, 0x08, 1, 0, 0); // break point #BP int 03h
+	set_idt(&idt[0x04], (void *)irs_OF, 0x08, 1, 0, 0); // overflow #OF
+	set_idt(&idt[0x05], (void *)irs_BR, 0x08, 1, 0, 0); // Bounds Check #BR
+	set_idt(&idt[0x06], (void *)irs_UD, 0x08, 1, 0, 0); // 無効な命令 #UD (Undifined Operation Code instruction)
+	set_idt(&idt[0x07], (void *)irs_NM, 0x08, 1, 0, 0); // コプロセッサーがない #NM (No coprosessor)
+	set_idt(&idt[0x08], (void *)irs_DF, 0x08, 1, 0, 0); // Double Falt #DF
+	set_idt(&idt[0x09], (void *)irs_coprocessor, 0x08, 1, 0, 0); // Coprocessor Segment Overrun #MF
+	set_idt(&idt[0x0A], (void *)irs_TS, 0x08, 1, 0, 0); // 無効なTSS #TS (Invalid TSS)
+	set_idt(&idt[0x0B], (void *)irs_NP, 0x08, 1, 0, 0); // セグメントエラー #NP (Segment Not Present)
+	set_idt(&idt[0x0C], (void *)irs_SS, 0x08, 1, 0, 0); // Stack Segment Fault #SS
+	set_idt(&idt[0x0D], (void *)irs_GP, 0x08, 1, 0, 0); // 一般保護例外 #GP
+	set_idt(&idt[0x0E], (void *)irs_PF, 0x08, 1, 0, 0); // ページフォールト #PF
+	set_idt(&idt[0x10], (void *)irs_MF, 0x08, 1, 0, 0); // 浮動小数点エラー #MF
+	set_idt(&idt[0x11], (void *)irs_AC, 0x08, 1, 0, 0); // アライメントエラー #AC
+	set_idt(&idt[0x12], (void *)irs_MC, 0x08, 1, 0, 0); // マシンチェック #MC
+	set_idt(&idt[0x13], (void *)irs_XF, 0x08, 1, 0, 0); // SIMDエラー #XF
 
  	set_idt(&idt[0x20], (void *)irs_timer, 0x08, 1, 0, 0); // タイマー
 
@@ -112,9 +112,10 @@ void kmain(unsigned long magic, unsigned long addr)
 	kprintf("[INFO] set IDT\n");
 
 	initializePIC();
-	kprintf("[INFO] initialized PIC");
+	kprintf("[INFO] initialized PIC\n");
 
 	startTimer();
+	kprintf("[INFO] Start Timer\n");
 
 	while(1){
 		io_hlt();

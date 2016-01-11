@@ -158,3 +158,77 @@ int kprintf(const char *fmt, ...)
 	}
 	return cnt;
 }
+
+static void kprint4(unsigned int v)
+{
+	char s[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+	if( v < 0 || v > 16){
+		return;
+	}
+	kputchar(s[v]);
+}
+
+
+void kprinthexc(unsigned char v)
+{
+	char str[2];
+	int i;
+
+	for(i = 0; i < 2; i++){
+		str[1 - i] = v % 16;
+		v = v / 16;
+	}
+
+	kprintf("0x");
+	for(i = 0; i < 2; i++){
+		kprint4(str[i]);
+	}
+}
+
+void kprinthexs(unsigned short v)
+{
+	char str[4];
+	int i;
+
+	for(i = 0; i < 4; i++){
+		str[3 - i] = v % 16;
+		v = v / 16;
+	}
+
+	kprintf("0x");
+	for(i = 0; i < 4; i++){
+		kprint4(str[i]);
+	}
+}
+
+void kprinthexi(unsigned int v)
+{
+	char str[8];
+	int i;
+
+	for(i = 0; i < 8; i++){
+		str[7 - i] = v % 16;
+		v = v / 16;
+	}
+
+	kprintf("0x");
+	for(i = 0; i < 8; i++){
+		kprint4(str[i]);
+	}
+}
+void kprinthexl(unsigned long v)
+{
+	char str[16];
+	int i;
+
+	for(i = 0; i < 16; i++){
+		str[15 - i] = v % 16;
+		v = v / 16;
+	}
+
+	kprintf("0x");
+	for(i = 0; i < 16; i++){
+		kprint4(str[i]);
+	}
+}

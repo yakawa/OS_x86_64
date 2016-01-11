@@ -28,6 +28,11 @@ int kputchar(int c);
 int kputs(const char *s);
 int kprintf(const char *fmt, ...);
 
+void kprinthexc(unsigned char v);
+void kprinthexs(unsigned short v);
+void kprinthexi(unsigned int v);
+void kprinthexl(unsigned long v);
+
 void io_out8(unsigned short address, unsigned char val);
 
 #endif
