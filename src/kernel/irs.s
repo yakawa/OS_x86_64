@@ -108,6 +108,9 @@ irs_GP:
 GLOBAL	irs_PF
 EXTERN	PF_func
 irs_PF:
+				mov rdi, cr2
+				mov rsi, [rsp]
+				mov rdx, [rsp + 8]
 				call PF_func
 				jmp hlt
 				iretq

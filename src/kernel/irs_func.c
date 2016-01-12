@@ -108,10 +108,17 @@ void GP_func(void)
 	return;
 }
 
-void PF_func(void)
+void PF_func(unsigned long address, unsigned long code, unsigned long rip)
 {
 	kprintf("Exception:");
-	kprintf("Page Fault #PF");
+	kprintf("Page Fault #PF\n");
+	kprintf("Address:");
+	kprinthexl(address);
+	kprintf("\n");
+	kprintf("Code:");
+	kprinthexl(code);
+	kprintf("RIP:");
+	kprinthexl(rip);
 	return;
 }
 
