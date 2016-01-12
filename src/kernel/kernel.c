@@ -98,15 +98,79 @@ void initializePIC(void)
 
 	io_sti();
 }
+struct multiboot_tag
+{
+	unsigned int type;
+	unsigned int size;
+};
+struct multiboot_mmap_entry
+{
+	unsigned long addr;
+	unsigned long len;
+	unsigned int type;
+	unsigned int zero;
+} __attribute__((packed));
+typedef struct multiboot_mmap_entry multiboot_memory_map_t;
+struct multiboot_tag_mmap
+{
+	unsigned int type;
+	unsigned int size;
+	unsigned int entry_size;
+	unsigned int entry_version;
+	struct multiboot_mmap_entry entries[0];
+};
+void printBootInfo(void * addr)
+{
+	unsigned int size;
+	kprinthexl((unsigned long)addr);kprintf("\n");
+	size = *(unsigned int *)addr;
+	kprintf("Size:");
+	kprinthexs(size);
+	kprintf("\n");
 
-void kmain(unsigned long magic, unsigned long addr)
+	//	for(tag = *(unsigned int*)(addr); addr <= end_addr;){// addr += *(unsigned int*)(addr + 4)){
+	struct multiboot_tag *tag;
+  for (tag = (struct multiboot_tag *) (addr + 8);
+			 tag->type != 0;
+			 tag = (struct multiboot_tag *) ((unsigned char *) tag + ((tag->size + 7) & ~7))){
+		kprintf("Tag:");kprinthexs(tag->type);kprintf("Size:");kprinthexs(tag->size);kprintf("\n");
+		if(tag->type == 6){
+			multiboot_memory_map_t *mmap;
+			for (mmap = ((struct multiboot_tag_mmap *) tag)->entries;
+					 (unsigned char *) mmap < (unsigned char *) tag + tag->size;
+					 mmap = (multiboot_memory_map_t *)((unsigned long) mmap	+ ((struct multiboot_tag_mmap *) tag)->entry_size)) {
+				/*kprintf("base_addr = "); kprinthexl(mmap->addr);
+				kprintf(" length = "); kprinthexl(mmap->len);
+				kprintf(" type = "); kprinthexc(mmap->type);
+				kprintf("\n");*/
+				kprinthexl(mmap->addr);kputchar('-'); kprinthexl(mmap->addr + mmap->len); kprintf("("); kprinthexl(mmap->len); kprintf(")");
+				switch(mmap->type){
+				case 1:
+					kprintf(" AVL");
+					break;
+				case 3:
+					kprintf(" ACPI");
+					break;
+				case 4:
+					kprintf(" RSV");
+					break;
+				default:
+					kprintf(" Unknown(");	kprinthexc(mmap->type);	kprintf(")");
+				}
+				kprintf("\n");
+			}
+		}
+	}
+}
+
+void kmain(unsigned long magic, void * addr)
 {
 	if(magic != 0x36d76289){
 		kprintf("Magic is ignore");
 		return;
 	}
-	kputs("Hello MyOS.");
-	kprintf("[DEBUG] magic %d\n", 4);
+
+	printBootInfo(addr);
 
 	setIDT64();
 	kprintf("[INFO] set IDT\n");
@@ -116,6 +180,8 @@ void kmain(unsigned long magic, unsigned long addr)
 
 	startTimer();
 	kprintf("[INFO] Start Timer\n");
+
+	kputs("Hello MyOS.");
 
 	while(1){
 		io_hlt();

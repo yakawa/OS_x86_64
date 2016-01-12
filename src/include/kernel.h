@@ -11,7 +11,7 @@
 #define PIC_SLAVE_DATA      0xA1
 #define PIC_SLAVE_IMR       0xA1
 
-void kmain(unsigned long magic, unsigned long addr);
+void kmain(unsigned long magic, void * addr);
 void startTimer(void);
 
 #endif
