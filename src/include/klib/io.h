@@ -34,5 +34,6 @@ void kprinthexi(unsigned int v);
 void kprinthexl(unsigned long v);
 
 void io_out8(unsigned short address, unsigned char val);
+unsigned char io_in8(unsigned short address);
 
 #endif

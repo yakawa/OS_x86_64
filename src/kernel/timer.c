@@ -12,5 +12,5 @@ void startTimer(void)
 void timer_func(void)
 {
 	tmr0 += 1;
-	io_out8(0x20, 0x20);
+	//io_out8(0x20, 0x20);
 }
