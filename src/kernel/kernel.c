@@ -1,6 +1,7 @@
 #include <kernel.h>
 #include <irs.h>
 #include <klib/io.h>
+#include <klib/serial.h>
 
 typedef struct _gate_descriptor {
 	unsigned short offset_low;
@@ -99,14 +100,18 @@ void initializePIC(void)
 	io_sti();
 }
 
+
 void kmain(unsigned long magic, unsigned long addr)
 {
 	if(magic != 0x36d76289){
 		kprintf("Magic is ignore");
 		return;
 	}
-	kputs("Hello MyOS.");
-	kprintf("[DEBUG] magic %d\n", 4);
+
+	#ifdef DEBUG
+	initializeSerial();
+	#endif
+
 
 	setIDT64();
 	kprintf("[INFO] set IDT\n");
@@ -116,6 +121,7 @@ void kmain(unsigned long magic, unsigned long addr)
 
 	startTimer();
 	kprintf("[INFO] Start Timer\n");
+	kputs("Hello MyOS.");
 
 	while(1){
 		io_hlt();

@@ -19,7 +19,6 @@ FONT vram_buf[DISPLAY_X * DISPLAY_Y];
 static unsigned int POS_X = 0, POS_Y = 0;
 
 
-
 static void fb_draw(FONT *buf)
 {
 	int i;
