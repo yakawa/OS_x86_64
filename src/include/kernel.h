@@ -24,15 +24,26 @@
 #define KM_TRUE  1
 #define KM_FALSE 0
 
+typedef struct _mem_map {
+	unsigned long base;
+	unsigned long len;
+	unsigned char type;
+} MEM_MAP;
+
 typedef struct _system_info {
 	unsigned char log_level;
 	unsigned char swap_sys;
 	unsigned long memory_size;
+	unsigned int memory_low;
+	unsigned int memory_high;
+	unsigned char memory_map_size;
+	MEM_MAP memory_map[100];
 } SYSTEM_INFO;
 
 SYSTEM_INFO sys_info;
 
 void kmain(unsigned long magic, void *addr);
+void getBootInfo(void *addr);
 void startTimer(void);
 
 #endif

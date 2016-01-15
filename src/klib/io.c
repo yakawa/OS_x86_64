@@ -187,3 +187,115 @@ void kmsg(const unsigned char msgLebel, const char *fmt)
 	kputs(fmt);
 	kputchar('\n');
 }
+
+void kmsg_lls(const unsigned char msgLebel, const char *fmt, unsigned long p1, unsigned long p2, char *p3)
+{
+	unsigned char c;
+	unsigned char ch;
+
+	if(msgLebel < sys_info.log_level){
+		return;
+	}
+	kmsg_prefix(msgLebel);
+	while((c = *fmt++) != 0){
+		if(c != '%'){
+			kputchar(c);
+		} else {
+			c = *fmt++;
+			switch(c){
+			case 0:
+				goto _exit;
+			case '%':
+				kputchar('%');
+				break;
+			case '0':
+				kprinthexl(p1);
+				break;
+			case '1':
+				kprinthexl(p2);
+				break;
+			case '2':
+				while((ch = *p3++) != 0){
+					kputchar(ch);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	_exit:
+	kputchar('\n');
+}
+void kmsg_lll(const unsigned char msgLebel, const char *fmt, unsigned long p1, unsigned long p2, unsigned long p3)
+{
+	unsigned char c;
+
+	if(msgLebel < sys_info.log_level){
+		return;
+	}
+	kmsg_prefix(msgLebel);
+	while((c = *fmt++) != 0){
+		if(c != '%'){
+			kputchar(c);
+		} else {
+			c = *fmt++;
+			switch(c){
+			case 0:
+				goto _exit;
+			case '%':
+				kputchar('%');
+				break;
+			case '0':
+				kprinthexl(p1);
+				break;
+			case '1':
+				kprinthexl(p2);
+				break;
+			case '2':
+				kprinthexl(p3);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	_exit:
+	kputchar('\n');
+}
+void kmsg_iii(const unsigned char msgLebel, const char *fmt, unsigned int p1, unsigned int p2, unsigned int p3)
+{
+	unsigned char c;
+
+	if(msgLebel < sys_info.log_level){
+		return;
+	}
+	kmsg_prefix(msgLebel);
+	while((c = *fmt++) != 0){
+		if(c != '%'){
+			kputchar(c);
+		} else {
+			c = *fmt++;
+			switch(c){
+			case 0:
+				goto _exit;
+			case '%':
+				kputchar('%');
+				break;
+			case '0':
+				kprinthexi(p1);
+				break;
+			case '1':
+				kprinthexi(p2);
+				break;
+			case '2':
+				kprinthexi(p3);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	_exit:
+	kputchar('\n');
+}

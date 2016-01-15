@@ -24,7 +24,7 @@ GATE_DESCRIPTOR idt[256];
 IDTR idtr;
 
 
-void set_idt(GATE_DESCRIPTOR *desc, void *handler, unsigned short selector, unsigned char P, unsigned char DPL, unsigned char D)
+static void set_idt(GATE_DESCRIPTOR *desc, void *handler, unsigned short selector, unsigned char P, unsigned char DPL, unsigned char D)
 {
 	unsigned char flg = 0x0E;
 	desc->reserve1 = 0x00;
@@ -41,7 +41,7 @@ void set_idt(GATE_DESCRIPTOR *desc, void *handler, unsigned short selector, unsi
 	desc->type = flg;
 }
 
-void setIDT64(void)
+static void setIDT64(void)
 {
 	int i;
 	for(i = 0; i < 256; i++){
@@ -70,14 +70,13 @@ void setIDT64(void)
 
  	set_idt(&idt[0x20], (void *)irs_timer, 0x08, 1, 0, 0); // タイマー
 
-
 	idtr.size= 256 * sizeof(GATE_DESCRIPTOR);
 	idtr.base= (GATE_DESCRIPTOR *)idt;
 
 	__asm__("lidt idtr");
 }
 
-void initializePIC(void)
+static void initializePIC(void)
 {
 	io_cli();
 
@@ -99,70 +98,6 @@ void initializePIC(void)
 
 	io_sti();
 }
-struct multiboot_tag
-{
-	unsigned int type;
-	unsigned int size;
-};
-struct multiboot_mmap_entry
-{
-	unsigned long addr;
-	unsigned long len;
-	unsigned int type;
-	unsigned int zero;
-} __attribute__((packed));
-typedef struct multiboot_mmap_entry multiboot_memory_map_t;
-struct multiboot_tag_mmap
-{
-	unsigned int type;
-	unsigned int size;
-	unsigned int entry_size;
-	unsigned int entry_version;
-	struct multiboot_mmap_entry entries[0];
-};
-void printBootInfo(void * addr)
-{
-	unsigned int size;
-	kprinthexl((unsigned long)addr);kprintf("\n");
-	size = *(unsigned int *)addr;
-	kprintf("Size:");
-	kprinthexs(size);
-	kprintf("\n");
-
-	//	for(tag = *(unsigned int*)(addr); addr <= end_addr;){// addr += *(unsigned int*)(addr + 4)){
-	struct multiboot_tag *tag;
-  for (tag = (struct multiboot_tag *) (addr + 8);
-			 tag->type != 0;
-			 tag = (struct multiboot_tag *) ((unsigned char *) tag + ((tag->size + 7) & ~7))){
-		kprintf("Tag:");kprinthexs(tag->type);kprintf("Size:");kprinthexs(tag->size);kprintf("\n");
-		if(tag->type == 6){
-			multiboot_memory_map_t *mmap;
-			for (mmap = ((struct multiboot_tag_mmap *) tag)->entries;
-					 (unsigned char *) mmap < (unsigned char *) tag + tag->size;
-					 mmap = (multiboot_memory_map_t *)((unsigned long) mmap	+ ((struct multiboot_tag_mmap *) tag)->entry_size)) {
-				/*kprintf("base_addr = "); kprinthexl(mmap->addr);
-				kprintf(" length = "); kprinthexl(mmap->len);
-				kprintf(" type = "); kprinthexc(mmap->type);
-				kprintf("\n");*/
-				kprinthexl(mmap->addr);kputchar('-'); kprinthexl(mmap->addr + mmap->len); kprintf("("); kprinthexl(mmap->len); kprintf(")");
-				switch(mmap->type){
-				case 1:
-					kprintf(" AVL");
-					break;
-				case 3:
-					kprintf(" ACPI");
-					break;
-				case 4:
-					kprintf(" RSV");
-					break;
-				default:
-					kprintf(" Unknown(");	kprinthexc(mmap->type);	kprintf(")");
-				}
-				kprintf("\n");
-			}
-		}
-	}
-}
 
 static void setDefaultSystemInfo(void)
 {
@@ -173,6 +108,7 @@ static void setDefaultSystemInfo(void)
 static void setInitialSystemInfo(void *addr)
 {
 	setDefaultSystemInfo();
+	getBootInfo(addr);
 }
 
 void kmain(unsigned long magic, void *addr)
@@ -181,13 +117,14 @@ void kmain(unsigned long magic, void *addr)
 		kmsg(KM_EMERG, "Magic is ignore");
 		return;
 	}
+#ifdef DEBUG
+	initializeSerial();
+#endif
 
-	printBootInfo(addr);
 	setInitialSystemInfo(addr);
 
 #ifdef DEBUG
 	sys_info.log_level = KM_DEBUG;
-	initializeSerial();
 #endif
 
 	setIDT64();
@@ -199,8 +136,6 @@ void kmain(unsigned long magic, void *addr)
 	startTimer();
 	kmsg(KM_INFO, "Start Timer");
 	kmsg(KM_NONE, "Hello MyOS.");
-
-	kputs("Hello MyOS.");
 
 	while(1){
 		io_hlt();

@@ -1,7 +1,7 @@
 include ../Makefile.inc
 CFLAGS += -I../include -I.
 
-OBJS = kernel.o kernel_asm.o irs.o irs_func.o timer.o
+OBJS = kernel.o kernel_asm.o irs.o irs_func.o timer.o bootinfo.o
 
 all: $(OBJS)
 
