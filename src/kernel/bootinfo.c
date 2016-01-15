@@ -73,12 +73,10 @@ void getBootInfo(void * addr)
 			 tag = (MULTIBOOT_TAG  *)((unsigned char *) tag + ((tag->size + 7) & ~7))){
 		switch(tag->type){
 		case 1:
-			kmsg(KM_INFO, "Boot Command Line Found");
 			cmd = (MULTIBOOT_CMD_LINE *)tag;
 			kmsg_lls(KM_INFO, "Command Line: %2", 0, 0, &cmd->cmd);
 			break;
 		case 2:
-			kmsg(KM_INFO, "Boot Loader Name Found");
 			ldr = (MULTIBOOT_LOADER *)tag;
 			kmsg_lls(KM_INFO, "Booted by %2", 0, 0, &ldr->name);
 			break;

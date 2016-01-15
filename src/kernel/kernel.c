@@ -103,12 +103,21 @@ static void setDefaultSystemInfo(void)
 {
 	sys_info.log_level = KM_INFO;
 	sys_info.swap_sys = KM_FALSE;
+
+#ifdef DEBUG
+	sys_info.log_level = KM_DEBUG;
+#endif
+
 }
 
 static void setInitialSystemInfo(void *addr)
 {
 	setDefaultSystemInfo();
 	getBootInfo(addr);
+#ifdef DEBUG
+	sys_info.log_level = KM_DEBUG;
+#endif
+
 }
 
 void kmain(unsigned long magic, void *addr)
