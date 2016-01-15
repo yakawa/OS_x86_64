@@ -3,142 +3,120 @@
 
 void irs_ignore_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Unknown Exception");
+	kmsg(KM_EMERG, "Exception: Unknown Exception");
 	return;
 }
 
 void DE_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Division by 0 #DE");
+	kmsg(KM_EMERG, "Exception: Division by 0 #DE");
 	return;
 }
 
 void DB_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Single Step (Debug) #DB");
+	kmsg(KM_INFO, "Exception: Single Step (Debug) #DB");
 	return;
-
 }
 
 void NMI_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Non-Maskable Interrupt");
+	kmsg(KM_EMERG, "Exception: Non-Maskable Interrupt");
 	return;
-
 }
 
 void BP_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Break Point (Debug) #BP");
+	kmsg(KM_INFO, "Exception: Break Point (Debug) #BP");
 	return;
 }
 
 void OF_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Overflow #OF");
+	kmsg(KM_EMERG, "Exception: Overflow #OF");
 	return;
 }
 
 void BR_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Bounds Check #BR");
+	kmsg(KM_EMERG, "Exception: Bounds Check #BR");
 	return;
 }
 
 void UD_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Undifined Operation Code Instruction #UD");
+	kmsg(KM_EMERG, "Exception: Undifined Operation Code Instruction #UD");
 	return;
 }
 
 void NM_func(void)
 {
-	kprintf("Exception:");
-	kprintf("No Coprocessor #BP");
+	kmsg(KM_EMERG, "Exception: No Coprocessor #BP");
 	return;
 }
 
 void DF_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Double Fault #DF");
+	kmsg(KM_EMERG, "Exception: Double Fault #DF");
 	return;
 }
 
 void coprocessor_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Coprocessor Segment Overrun #MF");
+	kmsg(KM_EMERG, "Exception: Coprocessor Segment Overrun #MF");
 	return;
 }
 
 void TS_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Invalid TSS #BP");
+	kmsg(KM_EMERG, "Exception: Invalid TSS #BP");
 	return;
 }
 
 void NP_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Segment Not Present #NP");
+	kmsg(KM_EMERG, "Exception: Segment Not Present #NP");
 	return;
 }
 
 void SS_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Stack Segment Fault #BP");
+	kmsg(KM_EMERG, "Exception: Stack Segment Fault #BP");
 	return;
 }
 
 void GP_func(void)
 {
-	kprintf("Exception:");
-	kprintf("General Protection Fault #GP");
+	kmsg(KM_EMERG, "Exception: General Protection Fault #GP");
 	return;
 }
 
 void PF_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Page Fault #PF");
+	kmsg(KM_EMERG, "Exception: Page Fault #PF");
 	return;
 }
 
 void MF_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Corpocessor Error #MF");
+	kmsg(KM_EMERG, "Exception: Corpocessor Error #MF");
 	return;
 }
 
 void AC_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Alignment Check #AF");
+	kmsg(KM_EMERG, "Exception: Alignment Check #AF");
 	return;
 }
 
 void MC_func(void)
 {
-	kprintf("Exception:");
-	kprintf("Machine Check #MC");
+	kmsg(KM_EMERG, "Exception: Machine Check #MC");
 	return;
 }
 
 void XF_func(void)
 {
-	kprintf("Exception:");
-	kprintf("SIMD FPU Exception #BP");
+	kmsg(KM_EMERG, "Exception: SIMD FPU Exception #BP");
 	return;
 }
