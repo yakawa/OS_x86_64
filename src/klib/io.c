@@ -1,4 +1,6 @@
+#include <kernel.h>
 #include <klib/io.h>
+#include <klib/serial.h>
 
 /* size of display */
 #define DISPLAY_X 80
@@ -19,7 +21,6 @@ FONT vram_buf[DISPLAY_X * DISPLAY_Y];
 static unsigned int POS_X = 0, POS_Y = 0;
 
 
-
 static void fb_draw(FONT *buf)
 {
 	int i;
@@ -31,48 +32,13 @@ static void fb_draw(FONT *buf)
 	}
 }
 
-static void _itoa(char *buf, int base, int d)
-{
-	char *p = buf;
-	char *p1, *p2;
-	unsigned long ud = d;
-	int divisor = 10;
-
-	/* If %d is specified and D is minus, put `-' in the head.  */
-	if (base == 'd' && d < 0) {
-		*p++ = '-';
-		buf++;
-		ud = -d;
-	} else if (base == 'x') {
-		divisor = 16;
-	}
-
-	/* Divide UD by DIVISOR until UD == 0.  */
-	do {
-		int remainder = ud % divisor;
-
-		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'a' - 10;
-	} while (ud /= divisor);
-
-	/* Terminate BUF.  */
-	*p = 0;
-
-	/* Reverse BUF.  */
-	p1 = buf;
-	p2 = p - 1;
-	while (p1 < p2) {
-		char tmp = *p1;
-		*p1 = *p2;
-		*p2 = tmp;
-		p1++;
-		p2--;
-	}
-}
-
-
 int kputchar(int c)
 {
 	FONT f;
+#ifdef DEBUG
+	writeSerial(c);
+#endif
+
 	if(c == '\n'){
 		POS_X = 0;
 		POS_Y = POS_Y + 1;
@@ -95,7 +61,7 @@ int kputchar(int c)
 	return 1;
 }
 
-int kputs(const char *s)
+static int kputs(const char *s)
 {
 	int cnt = 0;
 	while(1){
@@ -104,57 +70,6 @@ int kputs(const char *s)
 		}
 		kputchar((int)s[cnt]);
 		cnt++;
-	}
-	kputchar('\n');
-	return cnt;
-}
-int kprintf(const char *fmt, ...)
-{
-	char **arg = (char **)&fmt;
-	int c, i;
-	char buf[20];
-	int cnt = 0;
-
-	while((c = *fmt++) != 0){
-		for(i = 0; i < 20; i++){
-			buf[i] = '\0';
-		}
-		if(c != '%'){
-			kputchar(c);
-			cnt++;
-		} else {
-			char *p;
-			c = *fmt++;
-			switch(c){
-			case 'd':
-			case 'u':
-				_itoa(buf, c, *((int *)++arg));
-				p = buf;
-				goto string;
-				break;
-			case 'x':
-				_itoa(buf, c, *((int *)++arg));
-				p = buf;
-				goto string;
-				break;
-
-			case 's':
-				p = *arg++;
-				if(!p){
-					p = "(NULL)";
-				}
-			string:
-				while(*p){
-					kputchar(*p++);
-					cnt++;
-				}
-				break;
-
-			default:
-				kputchar(*((int *)++arg));
-				cnt++;
-			}
-		}
 	}
 	return cnt;
 }
@@ -180,7 +95,6 @@ void kprinthexc(unsigned char v)
 		v = v / 16;
 	}
 
-	kprintf("0x");
 	for(i = 0; i < 2; i++){
 		kprint4(str[i]);
 	}
@@ -196,7 +110,6 @@ void kprinthexs(unsigned short v)
 		v = v / 16;
 	}
 
-	kprintf("0x");
 	for(i = 0; i < 4; i++){
 		kprint4(str[i]);
 	}
@@ -212,7 +125,6 @@ void kprinthexi(unsigned int v)
 		v = v / 16;
 	}
 
-	kprintf("0x");
 	for(i = 0; i < 8; i++){
 		kprint4(str[i]);
 	}
@@ -227,8 +139,51 @@ void kprinthexl(unsigned long v)
 		v = v / 16;
 	}
 
-	kprintf("0x");
 	for(i = 0; i < 16; i++){
 		kprint4(str[i]);
 	}
+}
+
+static void kmsg_prefix(const unsigned char msgLebel)
+{
+	switch(msgLebel){
+	case KM_NONE:
+		break;
+	case KM_DEBUG:
+		kputs("[DEBUG ]");
+		break;
+	case KM_INFO:
+		kputs("[INFO  ]");
+		break;
+	case KM_NOTICE:
+		kputs("[NOTICE]");
+		break;
+	case KM_WARNING:
+		kputs("[WARN  ]");
+		break;
+	case KM_ERROR:
+		kputs("[ERROR ]");
+		break;
+	case KM_CRITICAL:
+		kputs("[CRIT  ]");
+		break;
+	case KM_ALERT:
+		kputs("[ALERT ]");
+		break;
+	case KM_EMERG:
+		kputs("[EMERG ]");
+		break;
+	default:
+		break;
+	}
+}
+
+void kmsg(const unsigned char msgLebel, const char *fmt)
+{
+	if(msgLebel < sys_info.log_level){
+		return;
+	}
+	kmsg_prefix(msgLebel);
+	kputs(fmt);
+	kputchar('\n');
 }
