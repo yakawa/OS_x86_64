@@ -25,8 +25,7 @@
 
 
 int kputchar(int c);
-int kputs(const char *s);
-int kprintf(const char *fmt, ...);
+void kmsg(const unsigned char msgLebel, const char *fmt);
 
 void kprinthexc(unsigned char v);
 void kprinthexs(unsigned short v);

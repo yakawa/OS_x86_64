@@ -100,28 +100,41 @@ void initializePIC(void)
 	io_sti();
 }
 
+static void setDefaultSystemInfo(void)
+{
+	sys_info.log_level = KM_INFO;
+	sys_info.swap_sys = KM_FALSE;
+}
 
-void kmain(unsigned long magic, unsigned long addr)
+static void setInitialSystemInfo(void *addr)
+{
+	setDefaultSystemInfo();
+}
+
+void kmain(unsigned long magic, void *addr)
 {
 	if(magic != 0x36d76289){
-		kprintf("Magic is ignore");
+		kmsg(KM_EMERG, "Magic is ignore");
 		return;
 	}
 
-	#ifdef DEBUG
+	setInitialSystemInfo(addr);
+
+#ifdef DEBUG
+	sys_info.log_level = KM_DEBUG;
 	initializeSerial();
-	#endif
+#endif
 
 
 	setIDT64();
-	kprintf("[INFO] set IDT\n");
+	kmsg(KM_INFO, "set IDT");
 
 	initializePIC();
-	kprintf("[INFO] initialized PIC\n");
+	kmsg(KM_INFO, "initialized PIC");
 
 	startTimer();
-	kprintf("[INFO] Start Timer\n");
-	kputs("Hello MyOS.");
+	kmsg(KM_INFO, "Start Timer");
+	kmsg(KM_NONE, "Hello MyOS.");
 
 	while(1){
 		io_hlt();
